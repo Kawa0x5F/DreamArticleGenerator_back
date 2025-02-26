@@ -20,3 +20,4 @@ def fetch_full_article():
     return get_article({})
 
 
+
