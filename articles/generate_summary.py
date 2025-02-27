@@ -10,7 +10,7 @@ def content_to_summary(contents):
 
     response = client.models.generate_content(
     model="gemini-2.0-flash",
-    contents=[prompt , contents]) #プロンプトと画像をgeminiに渡す
+    contents=[prompt , contents]) #プロンプトと本文をgeminiに渡す
 
     response_summary = response.text
 

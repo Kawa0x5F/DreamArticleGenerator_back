@@ -51,7 +51,7 @@ def generate_response(id, data):
     # チャットの返答を作成する
     response = client.models.generate_content(
         model="gemini-2.0-flash",
-        contents=[prompt , new_chat]) #プロンプトと画像をgeminiに渡す
+        contents=[prompt , new_chat]) #プロンプトとチャットをgeminiに渡す
 
     # 生成された返答のテキストを抽出する
     response_message = response.text
