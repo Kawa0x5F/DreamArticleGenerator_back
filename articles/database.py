@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 import supabase
 from datetime import datetime, timezone, timedelta
 from config import Config
-
+from articles.generate_summary import content_to_summary
 
 supabase: Client = create_client(
     Config.SUPABASE_ARTICUL_URL, Config.SUPABASE_ARTICUL_KEY
