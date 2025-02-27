@@ -1,7 +1,11 @@
 from flask import Flask
+from flask_cors import CORS
 
 def create_app():
     app = Flask(__name__)
+
+    # CORSの設定
+    CORS(app)
 
     from blueprint import article, chat
     app.register_blueprint(article.article, url_prefix="/api")
