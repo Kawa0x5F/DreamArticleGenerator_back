@@ -3,45 +3,52 @@ from supabase import create_client, Client
 import os
 from dotenv import load_dotenv
 import supabase
+from datetime import datetime, timezone, timedelta
+from config import Config
 
-# .env ファイルを読み込む
-load_dotenv()
 
-# 環境変数を取得
-SUPABASE_ARTICUL_URL  = os.getenv("SUPABASE_ARTICUL_URL")
-SUPABASE_ARTICUL_KEY = os.getenv("SUPABASE_ARTICUL_KEY")
-
-supabase: Client = create_client(SUPABASE_ARTICUL_URL, SUPABASE_ARTICUL_KEY)
+supabase: Client = create_client(
+    Config.SUPABASE_ARTICUL_URL, Config.SUPABASE_ARTICUL_KEY
+    )
 
 # 記事の追加
 def add_article(data):
     
     title = data.get("title")
-    article_body = data.get("article_body")
-    user_name = data.get("user_name")
+    content = data.get("content")  
+    summary = data.get("summary")  
+    author = data.get("author")  
+    timestamp = datetime.now(timezone(timedelta(hours=9))).strftime("%Y年%m月%d日")
 
-    if not title or not article_body or not user_name:
-        return jsonify({"error": "title, article_body, user_name are required"}), 400
 
+    if not title or not content or not author:
+        return jsonify({"error": "title, content, author are required"}), 400
+    
     response = supabase.table("articles").insert({
         "title": title,
-        "article_body": article_body,
-        "user_name": user_name
+        "content": content,
+        "summary": summary,
+        "author": author,
+        "timestamp": [timestamp]  # `text[]` 型の `time` に格納
     }).execute()
     
     return jsonify(response.data), 201
 
 
-# とりあえず全部読む。設計によって取り出す範囲や内容を後に決定
-# 記事のタイトルのみを読み取る
-def get_article_title():
-    # titles というカラム名が "title" であれば下記のとおり
-    # すべての行の "title" カラムだけを取得
-    response = supabase.table("articles").select("title").execute()
-    return jsonify(response.data), 200
 
-# 記事の全文を読み取る
-def get_article():
-    # すべてのカラムを取得する場合は select("*")
-    response = supabase.table("articles").select("*").execute()
-    return jsonify(response.data), 200
+def get_article_summaries():
+    response = supabase.table("articles").select("id, title, timestamp, summary").execute()
+
+    if not response.data or len(response.data) == 0:
+        return jsonify({"error": "No articles found"}), 404
+    
+    return jsonify(response.data), 200  # 全要素をそのまま返す
+
+
+def get_article(article_id):
+    response = supabase.table("articles").select("id, title, author, timestamp, content").eq("id", article_id).execute()
+    # Supabase の response.data はリストで返るので、空かどうか確認
+    if not response.data or len(response.data) == 0:
+        return jsonify({"error": "Article not found"}), 404
+    
+    return jsonify(response.data[0]), 200  # 最初の要素（1つの辞書）を返す
