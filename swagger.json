@@ -14,17 +14,17 @@
   "paths": {
     "/chat/get_id": {
       "get": {
-        "summary": "Generate and retrieve a new chat session ID",
+        "summary": "Generate and retrieve a new chat ID",
         "responses": {
           "200": {
-            "description": "Successfully generated a session ID",
+            "description": "Successfully generated ID",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "session_id": {
-                      "type": "string"
+                    "id": {
+                      "type": "integer"
                     }
                   }
                 }
