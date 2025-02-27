@@ -112,7 +112,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Article"
+                  "$ref": "#/components/schemas/ArticleGenerate"
                 }
               }
             }
@@ -124,8 +124,29 @@
       }
     },
     "/articles": {
+      "post": {
+        "summary": "データベースへ記事の登録を行う",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ArticleCreateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Article successfully created"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          }
+        }
+      },
       "get": {
-        "summary": "Get a list of articles",
+        "summary": "Get all article summaries",
         "responses": {
           "200": {
             "description": "Successfully retrieved articles",
@@ -134,7 +155,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Article"
+                    "$ref": "#/components/schemas/ArticleAll"
                   }
                 }
               }
@@ -166,7 +187,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Article"
+                  "$ref": "#/components/schemas/ArticleDetail"
                 }
               }
             }
@@ -183,15 +204,51 @@
   },
   "components": {
     "schemas": {
-      "Article": {
+      "ArticleFullDatabaseElemet": {
         "type": "object",
         "properties": {
           "id": { "type": "integer" },
           "title": { "type": "string" },
-          "content": { "type": "string" },
-          "summary": { "type": "string" },
           "author": { "type": "string" },
-          "timestamp": { "type": "string", "example": "YYYY年MM月DD日" }
+          "timestamp": { "type": "string", "example": "YYYY年MM月DD日" },
+          "content": { "type": "string" },
+          "summary": { "type": "string" }
+        }
+      },
+      "ArticleGenerate": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "title": { "type": "string" },
+          "content": { "type": "string" }
+        }
+      },
+      "ArticleAll": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "title": { "type": "string" },
+          "timestamp": { "type": "string", "example": "YYYY年MM月DD日" },
+          "summary": { "type": "string" }
+        }
+      },
+      "ArticleDetail": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "title": { "type": "string" },
+          "author": { "type": "string" },
+          "timestamp": { "type": "string", "example": "YYYY年MM月DD日" },
+          "content": { "type": "string" }
+        }
+      },
+      "ArticleCreateRequest": {
+        "type": "object",
+        "required": ["title", "content", "author"],
+        "properties": {
+          "title": { "type": "string" },
+          "content": { "type": "string" },
+          "author": { "type": "string" }
         }
       }
     },
