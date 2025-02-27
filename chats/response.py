@@ -25,7 +25,7 @@ supabase: Client = create_client(Config.SUPABASE_CHAT_URL, Config.SUPABASE_CHAT_
 
 def create_new_chat():
     new_chat = {
-        "chat": "user:\nこんにちは。あなたの夢はなんですか？\n"
+        "chat": 'role: "user" parts:"こんにちは。あなたの夢はなんですか？"\n'
     }
     response = supabase.table("chats").insert(new_chat).execute()
 
@@ -34,15 +34,15 @@ def create_new_chat():
     return jsonify({"id": id})
 
 def join_message(user, past_chat, message):
-    new_chat = past_chat + f'{user}:\n{message}\n'
+    new_chat = past_chat + f'role: "{user}" parts:"{message}"\n'
     return new_chat
 
 def generate_response(id, data):
     if "message" not in data:
         return "Bad request due to invalid input", 400
 
-    supa_data = supabase.table("chats").select("*").eq("id", id).execute()
-    past_chat = supa_data.data[0]['chat']
+    result = supabase.table("chats").select("*").eq("id", id).execute()
+    past_chat = result.data[0]['chat']
     message = data["message"]
     new_chat = join_message('user', past_chat, message)
 
@@ -58,7 +58,7 @@ def generate_response(id, data):
     response_message = response.text
 
     # 返答をテキストに結合する
-    new_chat = join_message('gemini', new_chat, response_message)
+    new_chat = join_message('modle', new_chat, response_message)
 
     # 最新のチャット状況をDBに保存する
     new_chat = {
