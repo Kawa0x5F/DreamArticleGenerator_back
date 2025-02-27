@@ -1,11 +1,18 @@
 from flask import Blueprint, request
 from articles.database import add_article, get_article_summaries, get_article
+from articles.generate_content import generated_article
 
 article = Blueprint('article', __name__)
 
+# 記事の生成
+@article.route('/article/generate/<int:chat_id>', methods=['GET'])
+def make_article(chat_id):
+    return generated_article(chat_id)
+
+
 # 記事の追加
 @article.route('/articles', methods=['POST'])
-def create_article():
+def add_article_to_db():
     return add_article(request.get_json())
 
 # 全記事の要約取得

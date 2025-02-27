@@ -13,13 +13,11 @@ supabase: Client = create_client(
 
 # 記事の追加
 def add_article(data):
-    
     title = data.get("title")
     content = data.get("content")  
-    summary = "summary" # ここでsummaryを作成する処理を挟む
+    summary = content_to_summary(content)
     author = data.get("author")  
     timestamp = datetime.now(timezone(timedelta(hours=9))).strftime("%Y年%m月%d日")
-
 
     if not title or not content or not author:
         return jsonify({"error": "title, content, author are required"}), 400
@@ -52,3 +50,14 @@ def get_article(article_id):
         return jsonify({"error": "Article not found"}), 404
     
     return jsonify(response.data[0]), 200  # 最初の要素（1つの辞書）を返す
+
+
+def get_chat_history(chat_id):
+    response = supabase.table("chats").select("chat").eq("id", chat_id).execute()
+
+    if not response.data or len(response.data) == 0:
+        return jsonify({"error": "Generated article not found"}), 400
+
+    chat_content = response.data[0].get("chat", "")
+
+    return chat_content
