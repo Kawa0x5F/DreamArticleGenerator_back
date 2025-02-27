@@ -20,7 +20,11 @@ def run_generate_content(chat_history):
 
     client = genai.Client(api_key=Config.GEMINI_API_KEY)
     title_prompt = """
-    
+    次に夢について書かれた記事を示します．この記事のタイトルを生成してください．
+    ただし，生成する際は次の条件に従ってください．
+    - タイトルのみを出力
+    - 最もテーマに合っていると考えられる1つのみを出力
+    - 修飾なしの純粋な文字列のみで出力
     """
     response = client.models.generate_content(
     model="gemini-2.0-flash",
