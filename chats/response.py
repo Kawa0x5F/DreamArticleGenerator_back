@@ -1,9 +1,11 @@
 import os
+from flask import jsonify
 from google import genai
 from chats.gemini_api_key import GEMINI_API_KEY
 from supabase import create_client, Client
 from dotenv import load_dotenv
 
+# 仮書きのコード
 prompt =   'あなたは夢についての記事の作成を補助する専門家です．\
             会話相手の夢についての情報を聞き出し，最終的にその夢についての記事を作成してください．\
             会話の内容を示します．いい感じになるように返答を生成してください．\
@@ -20,44 +22,34 @@ prompt =   'あなたは夢についての記事の作成を補助する専門�
                 3. 記事の出力形式はMarkdownです．\
             以上です．よろしくお願いします．\
             '
-chat_history = 'あなた:\nこんにちは。あなたの夢はなんですか？\n'
-
-# 仮書きのコード
 load_dotenv()
 SUPABASE_CHAT_URL = os.getenv("SUPABASE_CHAT_URL")
 SUPABASE_CHAT_KEY = os.getenv("SUPABASE_CHAT_KEY")
 
 supabase: Client = create_client(SUPABASE_CHAT_URL, SUPABASE_CHAT_KEY)
 
-def get_text(data):
-    # 仮書きのコード
-    if 'id' not in data:
-        new_chat = {
-            "chat": "あなた:\nこんにちは。あなたの夢はなんですか？\n"
-        }
-        response = supabase.table("chats").insert(new_chat).execute()
-    else:
-        id = data['id']
-        response = supabase.table("chats").select("*").eq("id", id).execute()
-    text = data['text']
+def create_new_chat():
+    new_chat = {
+        "chat": "user:\nこんにちは。あなたの夢はなんですか？\n"
+    }
+    response = supabase.table("chats").insert(new_chat).execute()
 
-    return response, text
+    # idを抽出
+    id = response.data[0]['id']
+    return jsonify({"id": id})
 
-def join_text(user, text):
-    global chat_history
-    chat_history += f'{user}:\n{text}\n'
+def join_message(user, past_chat, message):
+    new_chat = past_chat + f'{user}:\n{message}\n'
+    return new_chat
 
-    print(chat_history)
+def generate_response(id, data):
+    if "message" not in data:
+        return "Bad request due to invalid input", 400
 
-def generate_response(data):
-    global chat_history
-
-    # 受け取ったjsonからチャットに当たるテキストデータを受け取る
-    supa, text = get_text(data)
-    print('supaからの返答',supa)
-
-    # テキストを結合する
-    join_text('あいて', text)
+    supa_data = supabase.table("chats").select("*").eq("id", id).execute()
+    past_chat = supa_data.data[0]['chat']
+    message = data["message"]
+    new_chat = join_message('user', past_chat, message)
 
     # Geminiのクライアントを作成する
     client = genai.Client(api_key=GEMINI_API_KEY)
@@ -65,13 +57,18 @@ def generate_response(data):
     # チャットの返答を作成する
     response = client.models.generate_content(
         model="gemini-2.0-flash",
-        contents=[prompt , chat_history]) #プロンプトと画像をgeminiに渡す
+        contents=[prompt , new_chat]) #プロンプトと画像をgeminiに渡す
 
     # 生成された返答のテキストを抽出する
-
-    res_text = response.text
+    response_message = response.text
 
     # 返答をテキストに結合する
-    join_text('あなた',res_text)
+    new_chat = join_message('gemini', new_chat, response_message)
 
-    return res_text # 作成した応答を返す
+    # 最新のチャット状況をDBに保存する
+    new_chat = {
+        "chat": new_chat
+    }
+    supabase.table("chats").update(new_chat).eq("id", id).execute()
+
+    return response_message # 作成した応答を返す
