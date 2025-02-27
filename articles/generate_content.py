@@ -6,8 +6,11 @@ from config import Config
 def run_generate_content(chat_history):
     client = genai.Client(api_key=Config.GEMINI_API_KEY)
     content_prompt = """
-    この会話から記事を生成してください。
-    ただし、記事にする部分は、夢に関する会話だけを利用するようにしてください。
+    あなたは優秀な記事のライターです．次に示す会話から記事を生成してください。
+    ただし，記事を生成する際は以下に示す条件を守ってください．\n
+    - 記事の生成に利用するのは夢に関する会話の部分のみ
+    - Markdonw形式で出力 
+    - 出力時はタイトルと記事の部分のみを出力してください
     """
     response = client.models.generate_content(
     model="gemini-2.0-flash",
