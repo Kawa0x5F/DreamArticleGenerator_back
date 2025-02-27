@@ -4,8 +4,8 @@ def create_app():
     app = Flask(__name__)
 
     from blueprint import article, chat
-    app.register_blueprint(article.article, url_prefix="/article")
-    app.register_blueprint(chat.chat, url_prefix="/chat")
+    app.register_blueprint(article.article, url_prefix="/api/article")
+    app.register_blueprint(chat.chat, url_prefix="/api/chat")
 
     return app
 
