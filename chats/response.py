@@ -1,9 +1,7 @@
-import os
 from flask import jsonify
 from google import genai
-from chats.gemini_api_key import GEMINI_API_KEY
 from supabase import create_client, Client
-from dotenv import load_dotenv
+from config import Config
 
 # 仮書きのコード
 prompt =   'あなたは夢についての記事の作成を補助する専門家です．\
@@ -22,11 +20,8 @@ prompt =   'あなたは夢についての記事の作成を補助する専門�
                 3. 記事の出力形式はMarkdownです．\
             以上です．よろしくお願いします．\
             '
-load_dotenv()
-SUPABASE_CHAT_URL = os.getenv("SUPABASE_CHAT_URL")
-SUPABASE_CHAT_KEY = os.getenv("SUPABASE_CHAT_KEY")
 
-supabase: Client = create_client(SUPABASE_CHAT_URL, SUPABASE_CHAT_KEY)
+supabase: Client = create_client(Config.SUPABASE_CHAT_URL, Config.SUPABASE_CHAT_KEY)
 
 def create_new_chat():
     new_chat = {
@@ -52,7 +47,7 @@ def generate_response(id, data):
     new_chat = join_message('user', past_chat, message)
 
     # Geminiのクライアントを作成する
-    client = genai.Client(api_key=GEMINI_API_KEY)
+    client = genai.Client(api_key=Config.GEMINI_API_KEY)
 
     # チャットの返答を作成する
     response = client.models.generate_content(

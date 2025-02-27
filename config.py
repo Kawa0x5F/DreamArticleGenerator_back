@@ -8,3 +8,6 @@ load_dotenv()
 class Config:
     SUPABASE_ARTICUL_URL = os.getenv("SUPABASE_ARTICUL_URL")
     SUPABASE_ARTICUL_KEY = os.getenv("SUPABASE_ARTICUL_KEY")
+    SUPABASE_CHAT_URL = os.getenv("SUPABASE_CHAT_URL")
+    SUPABASE_CHAT_KEY = os.getenv("SUPABASE_CHAT_KEY")
+    GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
