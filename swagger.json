@@ -92,7 +92,7 @@
         }
       }
     },
-    "/articles/generate/{id}": {
+    "/article/generate/{id}": {
       "get": {
         "summary": "Generate an article from chat history for a specific session",
         "parameters": [
@@ -167,7 +167,7 @@
         }
       }
     },
-    "/articles/{id}": {
+    "/article/{id}": {
       "get": {
         "summary": "Get a single article by ID",
         "parameters": [
