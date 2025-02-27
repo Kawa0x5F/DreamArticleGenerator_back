@@ -10,7 +10,8 @@ def run_generate_content(chat_history):
     ただし，記事を生成する際は以下に示す条件を守ってください．\n
     - 記事の生成に利用するのは夢に関する会話の部分のみ
     - Markdonw形式で出力 
-    - 出力時はタイトルと記事の部分のみを出力してください
+    - 出力時は記事の部分のみを出力してください
+    - タイトルは別途記事から生成します．ので，タイトルは不要です．
     """
     response = client.models.generate_content(
     model="gemini-2.0-flash",
@@ -19,7 +20,7 @@ def run_generate_content(chat_history):
 
     client = genai.Client(api_key=Config.GEMINI_API_KEY)
     title_prompt = """
-    この記事のタイトルを生成してください。
+    
     """
     response = client.models.generate_content(
     model="gemini-2.0-flash",
