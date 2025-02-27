@@ -1,5 +1,8 @@
+import os
 from google import genai
 from chats.gemini_api_key import GEMINI_API_KEY
+from supabase import create_client, Client
+from dotenv import load_dotenv
 
 prompt =   'あなたは夢についての記事の作成を補助する専門家です．\
             会話相手の夢についての情報を聞き出し，最終的にその夢についての記事を作成してください．\
@@ -19,10 +22,26 @@ prompt =   'あなたは夢についての記事の作成を補助する専門�
             '
 chat_history = 'あなた:\nこんにちは。あなたの夢はなんですか？\n'
 
+# 仮書きのコード
+load_dotenv()
+SUPABASE_CHAT_URL = os.getenv("SUPABASE_CHAT_URL")
+SUPABASE_CHAT_KEY = os.getenv("SUPABASE_CHAT_KEY")
+
+supabase: Client = create_client(SUPABASE_CHAT_URL, SUPABASE_CHAT_KEY)
 
 def get_text(data):
+    # 仮書きのコード
+    if 'id' not in data:
+        new_chat = {
+            "chat": "あなた:\nこんにちは。あなたの夢はなんですか？\n"
+        }
+        response = supabase.table("chats").insert(new_chat).execute()
+    else:
+        id = data['id']
+        response = supabase.table("chats").select("*").eq("id", id).execute()
     text = data['text']
-    return text
+
+    return response, text
 
 def join_text(user, text):
     global chat_history
@@ -34,7 +53,8 @@ def generate_response(data):
     global chat_history
 
     # 受け取ったjsonからチャットに当たるテキストデータを受け取る
-    text = get_text(data)
+    supa, text = get_text(data)
+    print('supaからの返答',supa)
 
     # テキストを結合する
     join_text('あいて', text)
