@@ -16,7 +16,7 @@ def add_article(data):
     
     title = data.get("title")
     content = data.get("content")  
-    summary = data.get("summary")  
+    summary = "summary" # ここでsummaryを作成する処理を挟む
     author = data.get("author")  
     timestamp = datetime.now(timezone(timedelta(hours=9))).strftime("%Y年%m月%d日")
 
