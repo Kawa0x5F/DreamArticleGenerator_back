@@ -27,7 +27,7 @@ def add_article(data):
         "content": content,
         "summary": summary,
         "author": author,
-        "timestamp": [timestamp]  # `text[]` 型の `time` に格納
+        "timestamp": timestamp
     }).execute()
     
     return jsonify(response.data), 201
