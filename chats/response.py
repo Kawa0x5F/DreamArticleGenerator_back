@@ -1,11 +1,21 @@
+"""
+    チャットの作成，返答の作成に関する処理を行う
+"""
 from flask import jsonify
 from google import genai
 from supabase import create_client, Client
 from config import Config
 
+# データベースへのアクセスのために利用
 supabase: Client = create_client(Config.SUPABASE_CHAT_URL, Config.SUPABASE_CHAT_KEY)
 
 def create_new_chat():
+    """
+        データベースに新しいチャットを作成する.
+        作成されたデータベースのidを抽出して返す.
+    """
+
+    # チャット開始時のデフォルト
     new_chat = {
         "chat": 'role: "user" parts:"こんにちは。あなたの夢はなんですか？"\n'
     }
@@ -16,10 +26,18 @@ def create_new_chat():
     return jsonify({"id": id})
 
 def join_message(user, past_chat, message):
+    """
+        これまでのチャットの履歴と，新しいメッセージを発話者付きで追記して返す
+    """
+
     new_chat = past_chat + f'role: "{user}" parts:"{message}"\n'
     return new_chat
 
 def generate_response(id, data):
+    """
+        これまでの会話から，直近のメッセージに対しての返答を生成して返す
+    """
+
     if "message" not in data:
         return "Bad request due to invalid input", 400
 
