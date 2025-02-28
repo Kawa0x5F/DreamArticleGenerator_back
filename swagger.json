@@ -31,8 +31,8 @@
               }
             }
           },
-          "500": {
-            "$ref": "#/components/responses/InternalServerError"
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
           }
         }
       }
@@ -85,9 +85,6 @@
           },
           "400": {
             "$ref": "#/components/responses/BadRequest"
-          },
-          "500": {
-            "$ref": "#/components/responses/InternalServerError"
           }
         }
       }
@@ -112,20 +109,31 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ArticleGenerate"
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "content": {
+                      "type": "string"
+                    }
+                  }
                 }
               }
             }
           },
-          "500": {
-            "$ref": "#/components/responses/InternalServerError"
+          "404": {
+            "$ref": "#/components/responses/NotFound"
           }
         }
       }
     },
     "/articles": {
       "post": {
-        "summary": "データベースへ記事の登録を行う",
+        "summary": "Register article to the database",
         "requestBody": {
           "required": true,
           "content": {
@@ -140,8 +148,8 @@
           "201": {
             "description": "Article successfully created"
           },
-          "400": {
-            "$ref": "#/components/responses/BadRequest"
+          "404": {
+            "$ref": "#/components/responses/NotFound"
           }
         }
       },
@@ -161,8 +169,8 @@
               }
             }
           },
-          "500": {
-            "$ref": "#/components/responses/InternalServerError"
+          "404": {
+            "$ref": "#/components/responses/NotFound"
           }
         }
       }
@@ -194,9 +202,6 @@
           },
           "404": {
             "$ref": "#/components/responses/NotFound"
-          },
-          "500": {
-            "$ref": "#/components/responses/InternalServerError"
           }
         }
       }
