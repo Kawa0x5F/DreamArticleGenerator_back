@@ -40,13 +40,12 @@ def run_generate_content(chat_history):
 
 def generated_article(chat_id):
     chat_history = get_chat_history(chat_id)
+    if chat_history is None:
+        return jsonify({"error": "Generated article not found"}), 404
     content, title = run_generate_content(chat_history)
-    # title = "aa"
-    # title, content = "aa", f"{chat_history}"
     response = {
         "id" : chat_id,
         "title" : title,
         "content" : content
     }
-    
     return jsonify(response), 200
