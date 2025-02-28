@@ -1,3 +1,6 @@
+"""
+    FlaskのBlueprintで記事に関する通信のルーティングを行う
+"""
 from flask import Blueprint, request
 from articles.database import add_article, get_article_summaries, get_article
 from articles.generate_content import generated_article

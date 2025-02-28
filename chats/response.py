@@ -1,11 +1,21 @@
+"""
+    チャットの作成，返答の作成に関する処理を行う
+"""
 from flask import jsonify
 from google import genai
 from supabase import create_client, Client
 from config import Config
 
+# データベースへのアクセス用のクライアントを作成
 supabase: Client = create_client(Config.SUPABASE_URL, Config.SUPABASE_KEY)
 
 def create_new_chat():
+    """
+        データベースに新しいチャットを作成する.
+        作成されたデータベースのidを抽出して返す.
+    """
+
+    # チャット開始時のデフォルト
     new_chat = {
         "chat": 'role: "user" parts:"こんにちは。あなたの夢はなんですか？"\n'
     }
@@ -16,17 +26,27 @@ def create_new_chat():
     return jsonify({"id": id})
 
 def join_message(user, past_chat, message):
+    """
+        これまでのチャットの履歴と，新しいメッセージを発話者付きで追記して返す
+    """
+
     new_chat = past_chat + f'role: "{user}" parts:"{message}"\n'
     return new_chat
 
 def generate_response(id, data):
+    """
+        これまでの会話から，直近のメッセージに対しての返答を生成して返す
+    """
+
     if "message" not in data:
         return "Bad request due to invalid input", 400
 
+    # chatsテーブルからidが一致するレコードを取得する
+    # idは一意性を持つのでレコードは返ってこないもしくは一つのみ返ってくる
     result = supabase.table("chats").select("*").eq("id", id).execute()
-    past_chat = result.data[0]['chat']
-    message = data["message"]
-    new_chat = join_message('user', past_chat, message)
+    past_chat = result.data[0]['chat']  # 一番最初のレコードのchatの値をこれまでのチャットの履歴として取得
+    message = data["message"]           # クライアントから受け取ったデータから「メッセージ」を取得
+    new_chat = join_message('user', past_chat, message) # これまでのチャットの履歴と受け取った「メッセージ」を結合
 
     # Geminiのクライアントを作成する
     client = genai.Client(api_key=Config.GEMINI_API_KEY)

@@ -1,3 +1,6 @@
+"""
+    動作に必要なAPIKEYやURLを環境変数から設定する
+"""
 import os
 from dotenv import load_dotenv
 
