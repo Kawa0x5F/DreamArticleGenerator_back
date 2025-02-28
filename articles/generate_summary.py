@@ -1,3 +1,6 @@
+"""
+    記事の内容から要約を生成する
+"""
 from google import genai
 from config import Config
 
@@ -19,6 +22,7 @@ def content_to_summary(contents):
     model="gemini-2.0-flash",
     contents=[prompt , contents]) #プロンプトと本文をgeminiに渡す
 
+    # Geminiから返された結果からテキスト情報を抽出する
     response_summary = response.text
 
     return response_summary

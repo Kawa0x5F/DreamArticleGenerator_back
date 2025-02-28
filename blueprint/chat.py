@@ -1,3 +1,6 @@
+"""
+    FlaskのBlueprintでチャットに関するルーティングを行う
+"""
 from flask import Blueprint, request
 from chats.response import create_new_chat, generate_response
 

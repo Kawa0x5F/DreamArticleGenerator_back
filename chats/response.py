@@ -6,7 +6,7 @@ from google import genai
 from supabase import create_client, Client
 from config import Config
 
-# データベースへのアクセスのために利用
+# データベースへのアクセス用のクライアントを作成
 supabase: Client = create_client(Config.SUPABASE_CHAT_URL, Config.SUPABASE_CHAT_KEY)
 
 def create_new_chat():
@@ -41,10 +41,12 @@ def generate_response(id, data):
     if "message" not in data:
         return "Bad request due to invalid input", 400
 
+    # chatsテーブルからidが一致するレコードを取得する
+    # idは一意性を持つのでレコードは返ってこないもしくは一つのみ返ってくる
     result = supabase.table("chats").select("*").eq("id", id).execute()
-    past_chat = result.data[0]['chat']
-    message = data["message"]
-    new_chat = join_message('user', past_chat, message)
+    past_chat = result.data[0]['chat']  # 一番最初のレコードのchatの値をこれまでのチャットの履歴として取得
+    message = data["message"]           # クライアントから受け取ったデータから「メッセージ」を取得
+    new_chat = join_message('user', past_chat, message) # これまでのチャットの履歴と受け取った「メッセージ」を結合
 
     # Geminiのクライアントを作成する
     client = genai.Client(api_key=Config.GEMINI_API_KEY)
