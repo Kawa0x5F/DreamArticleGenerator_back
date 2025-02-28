@@ -10,7 +10,7 @@ from articles.generate_summary import content_to_summary
 
 # データベースへのアクセス用のクライアントを作成
 supabase: Client = create_client(
-    Config.SUPABASE_ARTICUL_URL, Config.SUPABASE_ARTICUL_KEY
+    Config.SUPABASE_URL, Config.SUPABASE_KEY
     )
 
 def add_article(data):
