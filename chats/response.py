@@ -3,7 +3,7 @@ from google import genai
 from supabase import create_client, Client
 from config import Config
 
-supabase: Client = create_client(Config.SUPABASE_CHAT_URL, Config.SUPABASE_CHAT_KEY)
+supabase: Client = create_client(Config.SUPABASE_URL, Config.SUPABASE_KEY)
 
 def create_new_chat():
     new_chat = {
