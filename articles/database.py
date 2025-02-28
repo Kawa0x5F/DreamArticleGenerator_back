@@ -56,7 +56,7 @@ def get_chat_history(chat_id):
     response = supabase.table("chats").select("chat").eq("id", chat_id).execute()
 
     if not response.data or len(response.data) == 0:
-        return jsonify({"error": "Generated article not found"}), 400
+        return None
 
     chat_content = response.data[0].get("chat", "")
 
