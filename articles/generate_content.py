@@ -1,9 +1,18 @@
+"""
+    チャットの履歴から記事の生成を行う
+"""
 from articles.database import get_chat_history
-from flask import Blueprint, request, jsonify
+from flask import jsonify
 from google import genai
 from config import Config
 
 def run_generate_content(chat_history):
+    """
+        チャットの履歴から記事の生成を行う
+        生成した記事からタイトルの生成を行う
+        生成したタイトルと記事を返す
+    """
+
     client = genai.Client(api_key=Config.GEMINI_API_KEY)
     content_prompt = """
     あなたは優秀な記事のライターです．次に示す会話から記事を生成してください。
@@ -39,6 +48,10 @@ def run_generate_content(chat_history):
 
 
 def generated_article(chat_id):
+    """
+        生成した記事とタイトル,chat_idを応答として返す
+    """
+
     chat_history = get_chat_history(chat_id)
     if chat_history is None:
         return jsonify({"error": "Generated article not found"}), 404
