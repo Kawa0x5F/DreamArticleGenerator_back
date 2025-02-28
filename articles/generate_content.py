@@ -2,8 +2,12 @@ from articles.database import get_chat_history
 from flask import Blueprint, request, jsonify
 from google import genai
 from config import Config
+import asyncio
 
 def run_generate_content(chat_history):
+    
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
     client = genai.Client(api_key=Config.GEMINI_API_KEY)
     content_prompt = """
     この会話から記事を生成してください。

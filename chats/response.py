@@ -2,6 +2,7 @@ from flask import jsonify
 from google import genai
 from supabase import create_client, Client
 from config import Config
+import asyncio
 
 supabase: Client = create_client(Config.SUPABASE_CHAT_URL, Config.SUPABASE_CHAT_KEY)
 
@@ -27,6 +28,9 @@ def generate_response(id, data):
     past_chat = result.data[0]['chat']
     message = data["message"]
     new_chat = join_message('user', past_chat, message)
+
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
 
     # Geminiのクライアントを作成する
     client = genai.Client(api_key=Config.GEMINI_API_KEY)
